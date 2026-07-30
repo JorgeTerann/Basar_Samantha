@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Papeleria Samantha - Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Papeleria Samantha</h1>
+        <p>Sistema POS e Inventario</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="usuario">Usuario</label>
+          <input type="text" id="usuario" placeholder="Ingrese su usuario" required>
+        </div>
+        <div class="form-group">
+          <label for="clave">Contraseña</label>
+          <input type="password" id="clave" placeholder="Ingrese su contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Iniciar Sesion</button>
+        <p id="loginError" class="error-msg"></p>
+      </form>
+    </div>
+  </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value.trim();
+      const clave = document.getElementById('clave').value.trim();
+      const errorEl = document.getElementById('loginError');
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario, clave })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorEl.textContent = data.msg;
+          return;
+        }
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        errorEl.textContent = 'Error de conexion con el servidor';
+      }
+    });
+  </script>
+</body>
+</html>
